@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Ocean Waves</string>
+    <string name="button_play">play</string>
+    <string name="button_stop">stop</string>
+    <string name="text_count_down">45</string>
+    <string name="action_settings">Settings</string>
+
+</resources>
