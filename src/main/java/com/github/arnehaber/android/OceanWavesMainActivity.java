@@ -140,10 +140,7 @@ public class OceanWavesMainActivity extends Activity {
 			final Runnable timerRunnable) {
 		OnClickListener result = new OnClickListener() {
 			public void onClick(View v) {
-				if (player.isPlaying()) {
-					timerHandler.removeCallbacks(timerRunnable);
-					pausePlayer();
-				}
+				pausePlayer(timerRunnable);
 			}
 		};
 		return result;
@@ -179,7 +176,7 @@ public class OceanWavesMainActivity extends Activity {
 				currentTime -= SECOND;
 				updateTime();
 				if (currentTime <= 0) {
-					stopPlayer();
+					stopPlayer(this);
 				} 
 				else {
 					timerHandler.postDelayed(this, SECOND);
@@ -205,18 +202,23 @@ public class OceanWavesMainActivity extends Activity {
 		} 
 	}
 	
-	private void stopPlayer() {
-		pausePlayer();
+	private void stopPlayer(Runnable timerRunnable) {
+		pausePlayer(timerRunnable);
 		playerIsInitialized = false;
 		player.stop();
 		player.reset();
 		player.release();
 	}
 	
-	private void pausePlayer() {
-		currentTime = sleepTime;
-		updateTime();
-		player.pause();
+	private void pausePlayer(Runnable timerRunnable) {
+		if (playerIsInitialized) {
+			currentTime = sleepTime;
+			updateTime();
+			if (player.isPlaying()) {
+				timerHandler.removeCallbacks(timerRunnable);
+			}
+			player.pause();			
+		}
 	}
 
 	private void updateTime() {
