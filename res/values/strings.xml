@@ -4,7 +4,7 @@
     <string name="app_name">Ocean Waves</string>
     <string name="button_play">play</string>
     <string name="button_stop">stop</string>
-    <string name="text_count_down">45</string>
+    <string name="text_count_down">45:00</string>
     <string name="action_settings">Settings</string>
 
 </resources>
