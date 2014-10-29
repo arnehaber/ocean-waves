@@ -59,7 +59,8 @@ public interface ITimedSleepPlayer {
 	/**
 	 * Sets the sleep timer with the given <b>progress</b>.
 	 * 
-	 * @param progress new sleep time in ms.
+	 * @param progress
+	 *            new sleep time in ms.
 	 */
 	void setSleepTime(int progress);
 

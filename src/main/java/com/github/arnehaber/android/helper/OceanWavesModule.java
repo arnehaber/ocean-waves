@@ -21,6 +21,8 @@ package com.github.arnehaber.android.helper;
  */
 
 
+import android.media.MediaPlayer;
+
 import com.github.arnehaber.android.ITimedSleepPlayer;
 import com.github.arnehaber.android.OceanWavesGui;
 import com.github.arnehaber.android.TimedSleepPlayer;
