@@ -24,7 +24,6 @@ package com.github.arnehaber.android;
 import android.app.Activity;
 import android.content.res.AssetFileDescriptor;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -151,14 +150,6 @@ public class OceanWavesMainActivity extends Activity implements OceanWavesGui, P
 			}
 		};
 		return result;
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(com.github.arnehaber.android.R.menu.main,
-				menu);
-		return true;
 	}
 
 	/* (non-Javadoc)
