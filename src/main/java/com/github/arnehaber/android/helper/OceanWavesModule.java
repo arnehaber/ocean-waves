@@ -21,10 +21,8 @@ package com.github.arnehaber.android.helper;
  */
 
 
-import android.media.MediaPlayer;
-
 import com.github.arnehaber.android.ITimedSleepPlayer;
-import com.github.arnehaber.android.OceanWavesGui;
+import com.github.arnehaber.android.IOceanWavesGui;
 import com.github.arnehaber.android.TimedSleepPlayer;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provider;
@@ -38,15 +36,15 @@ import com.google.inject.Provider;
 public class OceanWavesModule extends AbstractModule {
 
 	/**
-	 * The used {@link OceanWavesGui} provider.
+	 * The used {@link IOceanWavesGui} provider.
 	 */
-	private final Provider<OceanWavesGui> provider;
+	private final Provider<IOceanWavesGui> provider;
 	
 	/**
 	 * 
-	 * @param provider the {@link OceanWavesGui} provider to use.
+	 * @param provider the {@link IOceanWavesGui} provider to use.
 	 */
-	public OceanWavesModule(Provider<OceanWavesGui> provider) {
+	public OceanWavesModule(Provider<IOceanWavesGui> provider) {
 		this.provider = provider;
 	}
 	
@@ -54,7 +52,7 @@ public class OceanWavesModule extends AbstractModule {
 	protected void configure() {
 		bind(ITimedSleepPlayer.class).to(TimedSleepPlayer.class);
 		
-		bind(OceanWavesGui.class).toProvider(provider);
+		bind(IOceanWavesGui.class).toProvider(provider);
 	}
 
 }

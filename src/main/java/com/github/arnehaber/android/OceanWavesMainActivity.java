@@ -44,7 +44,7 @@ import com.google.inject.Provider;
  * 
  * @author Arne Haber
  */
-public class OceanWavesMainActivity extends Activity implements OceanWavesGui, Provider<OceanWavesGui> {
+public class OceanWavesMainActivity extends Activity implements IOceanWavesGui, Provider<IOceanWavesGui> {
 
 
 	/**
@@ -153,30 +153,30 @@ public class OceanWavesMainActivity extends Activity implements OceanWavesGui, P
 	}
 
 	/* (non-Javadoc)
-	 * @see com.github.arnehaber.android.OceanWavesGui#updateTime()
+	 * @see com.github.arnehaber.android.IOceanWavesGui#updateTime()
 	 */
 	public void updateTime(String time) {
 		timeTextView.setText(time);
 	}
 
 	/* (non-Javadoc)
-	 * @see com.github.arnehaber.android.OceanWavesGui#updateProgress()
+	 * @see com.github.arnehaber.android.IOceanWavesGui#updateProgress()
 	 */
 	public void updateProgress(int progress) {
 		this.progress.setProgress(progress);
 	}
 
 	/* (non-Javadoc)
-	 * @see com.github.arnehaber.android.OceanWavesGui#getSelectedAudioFile()
+	 * @see com.github.arnehaber.android.IOceanWavesGui#getSelectedAudioFile()
 	 */
 	public AssetFileDescriptor getSelectedAudioFile() {
 		return getResources().openRawResourceFd(R.raw.ocean_mp3);
 	}
 
 	/**
-	 * @return the provided {@link OceanWavesGui}.
+	 * @return the provided {@link IOceanWavesGui}.
 	 */
-	public OceanWavesGui get() {
+	public IOceanWavesGui get() {
 		return this;
 	}
 }

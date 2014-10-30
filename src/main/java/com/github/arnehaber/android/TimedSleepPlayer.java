@@ -40,7 +40,7 @@ public class TimedSleepPlayer implements ITimedSleepPlayer {
 
 	private int currentTime = TimeConstants.DEFAULT_TIME;
 
-	private final OceanWavesGui gui;
+	private final IOceanWavesGui gui;
 	
 	private final Injector injector;
 
@@ -56,7 +56,7 @@ public class TimedSleepPlayer implements ITimedSleepPlayer {
 
 	@Inject
 	public TimedSleepPlayer(final Injector injector) {
-		this.gui = injector.getInstance(OceanWavesGui.class);
+		this.gui = injector.getInstance(IOceanWavesGui.class);
 		this.injector = injector;
 
 		this.timerHandler = injector.getInstance(Handler.class);
@@ -92,7 +92,7 @@ public class TimedSleepPlayer implements ITimedSleepPlayer {
 
 	/**
 	 * Initializes the used {@link MediaPlayer} with the audio file served from
-	 * the {@link OceanWavesGui}.
+	 * the {@link IOceanWavesGui}.
 	 */
 	private void initializePlayer() {
 		AssetFileDescriptor audioFile = gui.getSelectedAudioFile();

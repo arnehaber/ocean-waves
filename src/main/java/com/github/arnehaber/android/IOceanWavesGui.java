@@ -28,7 +28,7 @@ import android.content.res.AssetFileDescriptor;
  * @author Arne Haber
  *
  */
-public interface OceanWavesGui {
+public interface IOceanWavesGui {
 	
 	/**
 	 * 
