@@ -33,7 +33,10 @@ import java.lang.reflect.Method;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.robolectric.RobolectricTestRunner;
 
 import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
@@ -44,6 +47,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
+@RunWith(RobolectricTestRunner.class)
 public class TimedSleepPlayerTest {
 
 	
@@ -102,7 +106,7 @@ public class TimedSleepPlayerTest {
 		testInitializeTestee();
 		testee.setSleepTime(expected);
 		
-		verify(mockedGui).updateTime("0:02");
+		verify(mockedGui).updateTime(TimeConstants.timeToString(expected));
 		
 		verify(mockedGui, times(1)).updateProgress(pos);
 		
@@ -130,8 +134,29 @@ public class TimedSleepPlayerTest {
 
 
 
-	public void testPausePlayer() {
+	@Test
+	public void testPausePlayerUninitialized() {
+		testee.pausePlayer();
+		verify(mockedGui, never()).updateTime(null);
+		verify(mockedPlayer, never()).isPlaying();
+		verify(mockedPlayer, never()).pause();
+	}
+	
+	@Test
+	public void testPausePlayerInitialized() {
+		int pos = 123;
+		when(mockedPlayer.getCurrentPosition()).thenReturn(pos);
+		when(mockedPlayer.isPlaying()).thenReturn(true);
+		ArgumentCaptor<Runnable> argument = ArgumentCaptor.forClass(Runnable.class);
+		testInitializeTestee();
+
+		testee.pausePlayer();
 		
+		verify(mockedGui, times(1)).updateTime(TimeConstants.timeToString(TimeConstants.DEFAULT_TIME));
+		verify(mockedPlayer, times(2)).isPlaying();
+		verify(mockedGui, times(1)).updateProgress(pos);
+		verify(mockedHandler, times(1)).removeCallbacks(argument.capture());		
+		verify(mockedPlayer, times(1)).pause();
 	}
 
 	public void testStartPlayer() {

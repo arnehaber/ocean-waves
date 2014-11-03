@@ -73,7 +73,8 @@ public class TimedSleepPlayer implements ITimedSleepPlayer {
 				if (currentTime <= 0) {
 					timerRunnable = this;
 					stopPlayer();
-				} else {
+				} 
+				else {
 					timerHandler.postDelayed(this, TimeConstants.SECOND);
 				}
 			}
@@ -168,17 +169,8 @@ public class TimedSleepPlayer implements ITimedSleepPlayer {
 	}
 
 	private void updateTime() {
-		int minutes = (currentTime / TimeConstants.SECOND);
-		StringBuilder sb = new StringBuilder();
-		sb.append((minutes / 60));
-		sb.append(":");
-		int mod = minutes % 60;
-		if (mod < 10) {
-			sb.append("0");
-		}
-		sb.append(mod);
-
-		gui.updateTime(sb.toString());
+		String time = TimeConstants.timeToString(currentTime);
+		gui.updateTime(time);
 		if (playerIsInitialized && player.isPlaying()) {
 			int pos = player.getCurrentPosition();
 			gui.updateProgress(pos);

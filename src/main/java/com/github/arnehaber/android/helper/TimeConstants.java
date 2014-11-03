@@ -45,5 +45,24 @@ public class TimeConstants {
 	private TimeConstants() {
 		
 	}
+	
+	/**
+	 * Prints the given time in format mm:ss.
+	 * 
+	 * @param ms time to print in ms
+	 * @return the given time as a readable string.
+	 */
+	public static String timeToString(int ms) {
+		int minutes = (ms / TimeConstants.SECOND);
+		StringBuilder sb = new StringBuilder();
+		sb.append((minutes / 60));
+		sb.append(":");
+		int mod = minutes % 60;
+		if (mod < 10) {
+			sb.append("0");
+		}
+		sb.append(mod);
+		return sb.toString();
+	}
 
 }
