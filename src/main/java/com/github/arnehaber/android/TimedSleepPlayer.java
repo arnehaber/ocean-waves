@@ -113,10 +113,6 @@ public class TimedSleepPlayer implements ITimedSleepPlayer {
 		}
 	}
 
-	private boolean isPlayerInitialized() {
-		return playerIsInitialized;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -160,12 +156,14 @@ public class TimedSleepPlayer implements ITimedSleepPlayer {
 	 * @see com.github.arnehaber.android.ITimedSleepPlayer#stopPlayer()
 	 */
 	public void stopPlayer() {
-		pausePlayer();
-		gui.updateProgress(0);
-		playerIsInitialized = false;
-		player.stop();
-		player.reset();
-		player.release();
+		if (playerIsInitialized) {
+			pausePlayer();
+			gui.updateProgress(0);
+			playerIsInitialized = false;
+			player.stop();
+			player.reset();
+			player.release();			
+		}
 	}
 
 	private void updateTime() {
@@ -183,9 +181,10 @@ public class TimedSleepPlayer implements ITimedSleepPlayer {
 	 * @see com.github.arnehaber.android.ITimedSleepPlayer#getDuration()
 	 */
 	public int getDuration() {
-		if (isPlayerInitialized()) {
+		if (playerIsInitialized) {
 			return player.getDuration();
-		} else {
+		} 
+		else {
 			return 0;
 		}
 	}
