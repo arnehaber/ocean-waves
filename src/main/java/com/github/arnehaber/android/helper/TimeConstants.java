@@ -20,7 +20,12 @@ package com.github.arnehaber.android.helper;
  * #L%
  */
 
-
+/**
+ * Helper class that provides time constants and helper methods.
+ * 
+ * @author Arne Haber
+ *
+ */
 public class TimeConstants {
 	
 	/**

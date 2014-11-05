@@ -49,6 +49,12 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
+/**
+ * Tests for the {@link TimedSleepPlayer}.
+ * 
+ * @author Arne Haber
+ *
+ */
 @RunWith(RobolectricTestRunner.class)
 public class TimedSleepPlayerTest {
 
