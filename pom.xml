@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.arnehaber.android</groupId>
   <artifactId>ocean-waves</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <packaging>apk</packaging>
   <name>ocean-waves</name>
 
@@ -15,11 +15,27 @@
       <distribution>manual</distribution>
     </license>
   </licenses>
+  
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/arnehaber/ocean-waves/issues</url>
+  </issueManagement>
+
+  <ciManagement>
+    <system>Travis CI</system>
+    <url>https://travis-ci.org/arnehaber/ocean-waves</url>
+  </ciManagement>
+
+  <scm>
+    <url>https://github.com/arnehaber/ocean-waves</url>
+    <developerConnection>scm:git:git://github.com/arnehaber/ocean-waves.git</developerConnection>
+    <connection>scm:git:git://github.com/arnehaber/ocean-waves.git</connection>
+    <tag>1.0.0</tag>
+  </scm>  
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <platform.version> 4.1.1.4
-    </platform.version>
+    <platform.version>4.1.1.4</platform.version>
     <android.plugin.version>3.6.0</android.plugin.version>
   </properties>
 
