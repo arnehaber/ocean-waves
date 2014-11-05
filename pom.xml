@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.arnehaber.android</groupId>
   <artifactId>ocean-waves</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0-SNAPSHOT</version>
   <packaging>apk</packaging>
   <name>ocean-waves</name>
 
@@ -30,7 +30,7 @@
     <url>https://github.com/arnehaber/ocean-waves</url>
     <developerConnection>scm:git:git://github.com/arnehaber/ocean-waves.git</developerConnection>
     <connection>scm:git:git://github.com/arnehaber/ocean-waves.git</connection>
-    <tag>1.0.0</tag>
+    <tag>master</tag>
   </scm>  
 
   <properties>
