@@ -23,3 +23,6 @@ android:
     - extra-google-google_play_services
     - extra-google-m2repository
     - extra-android-m2repository
+
+after_success:
+  - mvn clean cobertura:cobertura org.eluder.coveralls:coveralls-maven-plugin:report

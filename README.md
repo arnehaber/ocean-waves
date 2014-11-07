@@ -5,6 +5,7 @@ it stops playing the sound.
 
 ## Build Status
 [![Build Status](https://travis-ci.org/arnehaber/ocean-waves.svg?branch=master)](https://travis-ci.org/arnehaber/ocean-waves)
+[![Coverage Status](https://coveralls.io/repos/arnehaber/ocean-waves/badge.png?branch=master)](https://coveralls.io/r/arnehaber/ocean-waves?branch=master)
 
 ## License
 
