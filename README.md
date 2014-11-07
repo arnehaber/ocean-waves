@@ -3,6 +3,9 @@
 Ocean Waves is a simple android app that plays back the relaxing sound of ocean waves in a loop. After a certain time has passed,
 it stops playing the sound.
 
+## Build Status
+[![Build Status](https://travis-ci.org/arnehaber/ocean-waves.svg?branch=master)](https://travis-ci.org/arnehaber/ocean-waves)
+
 ## License
 
     Copyright 2014 Arne Haber
