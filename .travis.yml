@@ -3,8 +3,10 @@ language: android
 
 before_install:
     # install required dependencies from android to local mvn repository
+    - wget https://dl-ssl.google.com/android/repository/support_r19.0.1.zip
+    - unzip support_r19.0.1.zip
     - mvn install:install-file -DgroupId=com.google.android.maps -DartifactId=maps -Dversion=18_r3 -Dpackaging=jar -Dfile="$ANDROID_HOME/add-ons/addon-google_apis-google-18/libs/maps.jar"
-    - mvn install:install-file -DgroupId=com.android.support -DartifactId=support-v4 -Dversion=19.0.1 Dpackaging=jar Dfile="$ANDROID_HOME/extras/android/m2repository/com/android/support/support-v4/19.1.0/support-v4-19.1.0.jar"
+    - mvn install:install-file -DgroupId=com.android.support -DartifactId=support-v4 -Dversion=19.0.1 -Dpackaging=jar -Dfile="support/v4/android-support-v4.jar"
 
 android:
   components:
