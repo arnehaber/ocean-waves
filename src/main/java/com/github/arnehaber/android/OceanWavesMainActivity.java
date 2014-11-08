@@ -45,6 +45,8 @@ import com.google.inject.Provider;
  */
 public class OceanWavesMainActivity extends Activity implements IOceanWavesGui, Provider<IOceanWavesGui> {
 
+    protected static final String STATE_SLEEP_TIME_VALUE = "com.github.arnehaber.android.OceanWavesMainActivity.STATE_SLEEP_TIME_VALUE";
+    
     /**
      * Displays the current sleep time.
      */
@@ -54,6 +56,11 @@ public class OceanWavesMainActivity extends Activity implements IOceanWavesGui, 
      * Displays the play back progress.
      */
     private ProgressBar progress;
+    
+    /**
+     * The {@link SeekBar} used to set the sleep time.
+     */
+    private SeekBar sleepTimeSetter;
 
     /**
      * Controlled sound player.
@@ -86,7 +93,7 @@ public class OceanWavesMainActivity extends Activity implements IOceanWavesGui, 
         progress.setMax(player.getDuration());
 
         // setup sleep time setter
-        SeekBar sleepTimeSetter = (SeekBar) findViewById(R.id.sleepTimeSetter);
+        sleepTimeSetter = (SeekBar) findViewById(R.id.sleepTimeSetter);
         sleepTimeSetter.setMax(TimeConstants.MAX_SLEEP_TIME);
         sleepTimeSetter.setProgress(player.getSleepTime());
         sleepTimeSetter.setOnSeekBarChangeListener(createSleepTimeSetterListener());
@@ -179,5 +186,24 @@ public class OceanWavesMainActivity extends Activity implements IOceanWavesGui, 
      */
     public IOceanWavesGui get() {
         return this;
+    }
+
+    /* (non-Javadoc)
+     * @see android.app.Activity#onSaveInstanceState(android.os.Bundle)
+     */
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(STATE_SLEEP_TIME_VALUE, player.getSleepTime());
+    }
+
+    /* (non-Javadoc)
+     * @see android.app.Activity#onRestoreInstanceState(android.os.Bundle)
+     */
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        int sleepTime = savedInstanceState.getInt(STATE_SLEEP_TIME_VALUE);
+        sleepTimeSetter.setProgress(sleepTime);
     }
 }

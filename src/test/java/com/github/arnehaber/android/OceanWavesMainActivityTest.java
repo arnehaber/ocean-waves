@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.util.ActivityController;
 
 import android.content.res.AssetFileDescriptor;
 import android.widget.Button;
@@ -60,10 +61,14 @@ public class OceanWavesMainActivityTest {
     private ITimedSleepPlayer mockedPlayer;
 
     private ITimedSleepPlayer player;
+    
+    private ActivityController<OceanWavesMainActivity> controller;
 
     @Before
     public void setUp() {
-        testee = Robolectric.buildActivity(OceanWavesMainActivity.class).create().get();
+        controller = Robolectric.buildActivity(OceanWavesMainActivity.class).create().start();
+        
+        testee = controller.get();
         // setup guice
         Module mod = new OceanWavesModule(testee);
         Injector injector = Guice.createInjector(mod);
@@ -157,6 +162,25 @@ public class OceanWavesMainActivityTest {
         IOceanWavesGui expected = testee;
         IOceanWavesGui actual = testee.get();
         assertEquals(expected, actual);
+    }
+    
+    @Test
+    public void testSaveAndRestoreSleepTime() {
+        replacePlayerWithMock();
+        int timeToSet = TimeConstants.MAX_SLEEP_TIME;
+        SeekBar sleepTimeSetter = (SeekBar) testee.findViewById(R.id.sleepTimeSetter);
+        sleepTimeSetter.setProgress(timeToSet);
+        
+        verify(mockedPlayer, times(1)).setSleepTime(timeToSet);        
+        
+        controller.stop();
+        controller.start();
+        
+        sleepTimeSetter = (SeekBar) testee.findViewById(R.id.sleepTimeSetter);
+        
+        assertEquals(timeToSet, sleepTimeSetter.getProgress());
+        
+        
     }
 
     private void replacePlayerWithMock() {
