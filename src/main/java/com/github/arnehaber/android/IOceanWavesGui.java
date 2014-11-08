@@ -26,25 +26,27 @@ import android.content.res.AssetFileDescriptor;
  * Provides access to the GUI controls.
  * 
  * @author Arne Haber
- *
+ * 
  */
 public interface IOceanWavesGui {
-	
-	/**
-	 * 
-	 * @param time time to display
-	 */
-	void updateTime(String time);
-	
-	/**
-	 * 
-	 * @param progress progress to display.
-	 */
-	void updateProgress(int progress);
-	
-	/**
-	 * 
-	 * @return an {@link AssetFileDescriptor} of the audio file to play.
-	 */
-	AssetFileDescriptor getSelectedAudioFile();
+
+    /**
+     * 
+     * @param time
+     *            time to display
+     */
+    void updateTime(String time);
+
+    /**
+     * 
+     * @param progress
+     *            progress to display.
+     */
+    void updateProgress(int progress);
+
+    /**
+     * 
+     * @return an {@link AssetFileDescriptor} of the audio file to play.
+     */
+    AssetFileDescriptor getSelectedAudioFile();
 }

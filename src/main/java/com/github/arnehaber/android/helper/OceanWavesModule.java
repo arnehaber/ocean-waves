@@ -20,7 +20,6 @@ package com.github.arnehaber.android.helper;
  * #L%
  */
 
-
 import com.github.arnehaber.android.ITimedSleepPlayer;
 import com.github.arnehaber.android.IOceanWavesGui;
 import com.github.arnehaber.android.TimedSleepPlayer;
@@ -31,28 +30,29 @@ import com.google.inject.Provider;
  * Default guice module.
  * 
  * @author Arne Haber
- *
+ * 
  */
 public class OceanWavesModule extends AbstractModule {
 
-	/**
-	 * The used {@link IOceanWavesGui} provider.
-	 */
-	private final Provider<IOceanWavesGui> provider;
-	
-	/**
-	 * 
-	 * @param provider the {@link IOceanWavesGui} provider to use.
-	 */
-	public OceanWavesModule(Provider<IOceanWavesGui> provider) {
-		this.provider = provider;
-	}
-	
-	@Override
-	protected void configure() {
-		bind(ITimedSleepPlayer.class).to(TimedSleepPlayer.class);
-		
-		bind(IOceanWavesGui.class).toProvider(provider);
-	}
+    /**
+     * The used {@link IOceanWavesGui} provider.
+     */
+    private final Provider<IOceanWavesGui> provider;
+
+    /**
+     * 
+     * @param provider
+     *            the {@link IOceanWavesGui} provider to use.
+     */
+    public OceanWavesModule(Provider<IOceanWavesGui> provider) {
+        this.provider = provider;
+    }
+
+    @Override
+    protected void configure() {
+        bind(ITimedSleepPlayer.class).to(TimedSleepPlayer.class);
+
+        bind(IOceanWavesGui.class).toProvider(provider);
+    }
 
 }

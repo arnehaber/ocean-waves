@@ -21,47 +21,48 @@ package com.github.arnehaber.android;
  */
 
 /**
- * A media player that plays audio files in a loop and stops after a sleep timer expired.
+ * A media player that plays audio files in a loop and stops after a sleep timer
+ * expired.
  * 
  * @author Arne Haber
- *
+ * 
  */
 public interface ITimedSleepPlayer {
 
-	/**
-	 * 
-	 * @return the current sleep time.
-	 */
-	int getSleepTime();
+    /**
+     * 
+     * @return the current sleep time.
+     */
+    int getSleepTime();
 
-	/**
-	 * Pauses the play back. Keeps the current play back position and resets the
-	 * sleep timer.
-	 */
-	void pausePlayer();
-	
-	/**
-	 * Starts play back at the current position.
-	 */
-	void startPlayer();
+    /**
+     * Pauses the play back. Keeps the current play back position and resets the
+     * sleep timer.
+     */
+    void pausePlayer();
 
-	/**
-	 * Stops the player and releases internal resources.
-	 */
-	void stopPlayer();
+    /**
+     * Starts play back at the current position.
+     */
+    void startPlayer();
 
-	/**
-	 * 
-	 * @return the duration of the currently played track.
-	 */
-	int getDuration();
+    /**
+     * Stops the player and releases internal resources.
+     */
+    void stopPlayer();
 
-	/**
-	 * Sets the sleep timer with the given <b>progress</b>.
-	 * 
-	 * @param progress
-	 *            new sleep time in ms.
-	 */
-	void setSleepTime(int progress);
+    /**
+     * 
+     * @return the duration of the currently played track.
+     */
+    int getDuration();
+
+    /**
+     * Sets the sleep timer with the given <b>progress</b>.
+     * 
+     * @param progress
+     *            new sleep time in ms.
+     */
+    void setSleepTime(int progress);
 
 }

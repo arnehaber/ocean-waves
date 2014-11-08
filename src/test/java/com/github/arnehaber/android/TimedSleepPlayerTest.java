@@ -53,353 +53,339 @@ import com.google.inject.Injector;
  * Tests for the {@link TimedSleepPlayer}.
  * 
  * @author Arne Haber
- *
+ * 
  */
 @RunWith(RobolectricTestRunner.class)
 public class TimedSleepPlayerTest {
 
-	private IOceanWavesGui mockedGui = Mockito.mock(IOceanWavesGui.class);
-	private MediaPlayer mockedPlayer = Mockito.mock(MediaPlayer.class);
-	private Handler mockedHandler = Mockito.mock(Handler.class);
+    private IOceanWavesGui mockedGui = Mockito.mock(IOceanWavesGui.class);
+    private MediaPlayer mockedPlayer = Mockito.mock(MediaPlayer.class);
+    private Handler mockedHandler = Mockito.mock(Handler.class);
 
-	private TimedSleepPlayer testee;
+    private TimedSleepPlayer testee;
 
-	@Before
-	public void setUp() {
-		final AbstractModule testModule = new AbstractModule() {
-			@Override
-			protected void configure() {
-				bind(IOceanWavesGui.class).toInstance(mockedGui);
-				bind(MediaPlayer.class).toInstance(mockedPlayer);
-				bind(Handler.class).toInstance(mockedHandler);
-				bind(ITimedSleepPlayer.class).to(TimedSleepPlayer.class);
-			}
-		};
+    @Before
+    public void setUp() {
+        final AbstractModule testModule = new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(IOceanWavesGui.class).toInstance(mockedGui);
+                bind(MediaPlayer.class).toInstance(mockedPlayer);
+                bind(Handler.class).toInstance(mockedHandler);
+                bind(ITimedSleepPlayer.class).to(TimedSleepPlayer.class);
+            }
+        };
 
-		Injector i = Guice.createInjector(testModule);
-		testee = i.getInstance(TimedSleepPlayer.class);
-	}
+        Injector i = Guice.createInjector(testModule);
+        testee = i.getInstance(TimedSleepPlayer.class);
+    }
 
-	@Test
-	public void testGetSleepTime() {
-		int expected = TimeConstants.DEFAULT_TIME;
-		int actual = testee.getSleepTime();
-		assertEquals(expected, actual);
-	}
+    @Test
+    public void testGetSleepTime() {
+        int expected = TimeConstants.DEFAULT_TIME;
+        int actual = testee.getSleepTime();
+        assertEquals(expected, actual);
+    }
 
-	@Test
-	public void setSleepTimeUninitialized() {
-		assertFalse(isInitialized());
-		int pos = 123;
-		int expected = 2003;
-		testee.setSleepTime(expected);
-		verify(mockedGui).updateTime("0:02");
-		when(mockedPlayer.getCurrentPosition()).thenReturn(pos);
-		verify(mockedPlayer, never()).isPlaying();
-		verify(mockedPlayer, never()).getCurrentPosition();
-		verify(mockedGui, never()).updateProgress(pos);
+    @Test
+    public void setSleepTimeUninitialized() {
+        assertFalse(isInitialized());
+        int pos = 123;
+        int expected = 2003;
+        testee.setSleepTime(expected);
+        verify(mockedGui).updateTime("0:02");
+        when(mockedPlayer.getCurrentPosition()).thenReturn(pos);
+        verify(mockedPlayer, never()).isPlaying();
+        verify(mockedPlayer, never()).getCurrentPosition();
+        verify(mockedGui, never()).updateProgress(pos);
 
-		assertEquals(expected, testee.getSleepTime());
+        assertEquals(expected, testee.getSleepTime());
 
-	}
+    }
 
-	@Test
-	public void setSleepTimeInitialized() {
-		int pos = 123;
-		int expected = 2003;
-		when(mockedPlayer.isPlaying()).thenReturn(true);
-		when(mockedPlayer.getCurrentPosition()).thenReturn(pos);
-		testInitializeTestee();
-		testee.setSleepTime(expected);
+    @Test
+    public void setSleepTimeInitialized() {
+        int pos = 123;
+        int expected = 2003;
+        when(mockedPlayer.isPlaying()).thenReturn(true);
+        when(mockedPlayer.getCurrentPosition()).thenReturn(pos);
+        testInitializeTestee();
+        testee.setSleepTime(expected);
 
-		verify(mockedGui).updateTime(TimeConstants.timeToString(expected));
+        verify(mockedGui).updateTime(TimeConstants.timeToString(expected));
 
-		verify(mockedGui, times(1)).updateProgress(pos);
+        verify(mockedGui, times(1)).updateProgress(pos);
 
-		assertEquals(expected, testee.getSleepTime());
-	}
+        assertEquals(expected, testee.getSleepTime());
+    }
 
-	@Test
-	public void testInitializeTestee() {
-		try {
-			when(mockedGui.getSelectedAudioFile()).thenReturn(
-					mock(AssetFileDescriptor.class));
-			Method initializePlayer = testee.getClass().getDeclaredMethod(
-					"initializePlayer");
-			initializePlayer.setAccessible(true);
-			initializePlayer.invoke(testee);
-			verify(mockedGui, times(1)).getSelectedAudioFile();
-			verify(mockedPlayer, times(1)).setDataSource(null, 0, 0);
-			verify(mockedPlayer, times(1)).prepare();
-			verify(mockedPlayer, times(1)).setLooping(true);
-			assertTrue(isInitialized());
-		} 
-		catch (Exception e) {
-			e.printStackTrace();
-			fail(e.getMessage());
-		}
-	}
+    @Test
+    public void testInitializeTestee() {
+        try {
+            when(mockedGui.getSelectedAudioFile()).thenReturn(mock(AssetFileDescriptor.class));
+            Method initializePlayer = testee.getClass().getDeclaredMethod("initializePlayer");
+            initializePlayer.setAccessible(true);
+            initializePlayer.invoke(testee);
+            verify(mockedGui, times(1)).getSelectedAudioFile();
+            verify(mockedPlayer, times(1)).setDataSource(null, 0, 0);
+            verify(mockedPlayer, times(1)).prepare();
+            verify(mockedPlayer, times(1)).setLooping(true);
+            assertTrue(isInitialized());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+    }
 
-	@Test
-	public void testPausePlayerUninitialized() {
-		testee.pausePlayer();
-		verify(mockedGui, never()).updateTime(null);
-		verify(mockedPlayer, never()).isPlaying();
-		verify(mockedPlayer, never()).pause();
-	}
+    @Test
+    public void testPausePlayerUninitialized() {
+        testee.pausePlayer();
+        verify(mockedGui, never()).updateTime(null);
+        verify(mockedPlayer, never()).isPlaying();
+        verify(mockedPlayer, never()).pause();
+    }
 
-	@Test
-	public void testPausePlayerInitializedPlaying() {
-		int pos = 123;
-		when(mockedPlayer.getCurrentPosition()).thenReturn(pos);
-		when(mockedPlayer.isPlaying()).thenReturn(true);
-		ArgumentCaptor<Runnable> argument = ArgumentCaptor
-				.forClass(Runnable.class);
-		testInitializeTestee();
+    @Test
+    public void testPausePlayerInitializedPlaying() {
+        int pos = 123;
+        when(mockedPlayer.getCurrentPosition()).thenReturn(pos);
+        when(mockedPlayer.isPlaying()).thenReturn(true);
+        ArgumentCaptor<Runnable> argument = ArgumentCaptor.forClass(Runnable.class);
+        testInitializeTestee();
 
-		testee.pausePlayer();
+        testee.pausePlayer();
 
-		verify(mockedGui, times(1)).updateTime(
-				TimeConstants.timeToString(TimeConstants.DEFAULT_TIME));
-		verify(mockedPlayer, times(2)).isPlaying();
-		verify(mockedGui, times(1)).updateProgress(pos);
-		verify(mockedHandler, times(1)).removeCallbacks(argument.capture());
-		verify(mockedPlayer, times(1)).pause();
-	}
-	
-	@Test
-	public void testPausePlayerInitializedNotPlaying() {
-		int pos = 123;
-		when(mockedPlayer.getCurrentPosition()).thenReturn(pos);
-		when(mockedPlayer.isPlaying()).thenReturn(false);
-		ArgumentCaptor<Runnable> argument = ArgumentCaptor
-				.forClass(Runnable.class);
-		testInitializeTestee();
+        verify(mockedGui, times(1)).updateTime(TimeConstants.timeToString(TimeConstants.DEFAULT_TIME));
+        verify(mockedPlayer, times(2)).isPlaying();
+        verify(mockedGui, times(1)).updateProgress(pos);
+        verify(mockedHandler, times(1)).removeCallbacks(argument.capture());
+        verify(mockedPlayer, times(1)).pause();
+    }
 
-		testee.pausePlayer();
+    @Test
+    public void testPausePlayerInitializedNotPlaying() {
+        int pos = 123;
+        when(mockedPlayer.getCurrentPosition()).thenReturn(pos);
+        when(mockedPlayer.isPlaying()).thenReturn(false);
+        ArgumentCaptor<Runnable> argument = ArgumentCaptor.forClass(Runnable.class);
+        testInitializeTestee();
 
-		verify(mockedGui, times(1)).updateTime(
-				TimeConstants.timeToString(TimeConstants.DEFAULT_TIME));
-		verify(mockedPlayer, times(2)).isPlaying();
-		verify(mockedGui, never()).updateProgress(pos);
-		verify(mockedHandler, never()).removeCallbacks(argument.capture());
-		verify(mockedPlayer, times(1)).pause();
-	}
+        testee.pausePlayer();
 
-	@Test
-	public void testStartPlayerUninitialized() {
-		assertFalse(isInitialized());
-		when(mockedPlayer.isPlaying()).thenReturn(false);
-		when(mockedGui.getSelectedAudioFile()).thenReturn(
-				mock(AssetFileDescriptor.class));
-		ArgumentCaptor<Runnable> runnable = ArgumentCaptor
-				.forClass(Runnable.class);
-		ArgumentCaptor<Integer> delay = ArgumentCaptor.forClass(Integer.class);
-		testee.startPlayer();
-		// we have to wait a bit to let the started Thread finish
-		try {
-			Thread.sleep(100);
-		} 
-		catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+        verify(mockedGui, times(1)).updateTime(TimeConstants.timeToString(TimeConstants.DEFAULT_TIME));
+        verify(mockedPlayer, times(2)).isPlaying();
+        verify(mockedGui, never()).updateProgress(pos);
+        verify(mockedHandler, never()).removeCallbacks(argument.capture());
+        verify(mockedPlayer, times(1)).pause();
+    }
 
-		// check, if the player is initialized
-		assertTrue(isInitialized());
-		verify(mockedPlayer, times(1)).setLooping(true);
+    @Test
+    public void testStartPlayerUninitialized() {
+        assertFalse(isInitialized());
+        when(mockedPlayer.isPlaying()).thenReturn(false);
+        when(mockedGui.getSelectedAudioFile()).thenReturn(mock(AssetFileDescriptor.class));
+        ArgumentCaptor<Runnable> runnable = ArgumentCaptor.forClass(Runnable.class);
+        ArgumentCaptor<Integer> delay = ArgumentCaptor.forClass(Integer.class);
+        testee.startPlayer();
+        // we have to wait a bit to let the started Thread finish
+        try {
+            Thread.sleep(100);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-		verify(mockedPlayer, times(1)).isPlaying();
-		verify(mockedPlayer, times(1)).start();
-		verify(mockedHandler, times(1)).postDelayed(runnable.capture(),
-				delay.capture());
-	}
+        // check, if the player is initialized
+        assertTrue(isInitialized());
+        verify(mockedPlayer, times(1)).setLooping(true);
 
-	@Test
-	public void testStartPlayerInitializedNotPlaying() {
-		testInitializeTestee();
-		assertTrue(isInitialized());
-		// reset player mock to remove initialized calls from
-		// testInitializeTestee.
-		Mockito.reset(mockedPlayer);
-		when(mockedPlayer.isPlaying()).thenReturn(false);
+        verify(mockedPlayer, times(1)).isPlaying();
+        verify(mockedPlayer, times(1)).start();
+        verify(mockedHandler, times(1)).postDelayed(runnable.capture(), delay.capture());
+    }
 
-		ArgumentCaptor<Runnable> runnable = ArgumentCaptor
-				.forClass(Runnable.class);
-		ArgumentCaptor<Integer> delay = ArgumentCaptor.forClass(Integer.class);
-		testee.startPlayer();
-		// we have to wait a bit to let the started Thread finish
-		try {
-			Thread.sleep(100);
-		} 
-		catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		// check, that init has not been called
-		verify(mockedPlayer, never()).setLooping(true);
+    @Test
+    public void testStartPlayerInitializedNotPlaying() {
+        testInitializeTestee();
+        assertTrue(isInitialized());
+        // reset player mock to remove initialized calls from
+        // testInitializeTestee.
+        Mockito.reset(mockedPlayer);
+        when(mockedPlayer.isPlaying()).thenReturn(false);
 
-		verify(mockedPlayer, times(1)).isPlaying();
-		verify(mockedPlayer, times(1)).start();
-		verify(mockedHandler, times(1)).postDelayed(runnable.capture(),
-				delay.capture());
-	}
-	
-	@Test
-	public void testStartPlayerInitializedIsPlaying() {
-		testInitializeTestee();
-		assertTrue(isInitialized());
-		// reset player mock to remove initialized calls from
-		// testInitializeTestee.
-		Mockito.reset(mockedPlayer);
-		when(mockedPlayer.isPlaying()).thenReturn(true);
+        ArgumentCaptor<Runnable> runnable = ArgumentCaptor.forClass(Runnable.class);
+        ArgumentCaptor<Integer> delay = ArgumentCaptor.forClass(Integer.class);
+        testee.startPlayer();
+        // we have to wait a bit to let the started Thread finish
+        try {
+            Thread.sleep(100);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        // check, that init has not been called
+        verify(mockedPlayer, never()).setLooping(true);
 
-		testee.startPlayer();
-		// we have to wait a bit to let the started Thread finish
-		try {
-			Thread.sleep(100);
-		} 
-		catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		// check, that init has not been called
-		verify(mockedPlayer, never()).setLooping(true);
-		
-		verify(mockedPlayer, never()).start();
-	}
+        verify(mockedPlayer, times(1)).isPlaying();
+        verify(mockedPlayer, times(1)).start();
+        verify(mockedHandler, times(1)).postDelayed(runnable.capture(), delay.capture());
+    }
 
-	@Test
-	public void testStopPlayerUninitialized() {
-		assertFalse(isInitialized());
-		testee.stopPlayer();
-		
-		verify(mockedGui, never()).updateProgress(0);
-		verify(mockedPlayer, never()).stop();
-		verify(mockedPlayer, never()).reset();
-		verify(mockedPlayer, never()).release();
-	}
-	
-	@Test
-	public void testStopPlayerInitialized() {
-		testInitializeTestee();
-		testee.stopPlayer();
-		
-		verify(mockedGui, times(1)).updateProgress(0);
-		verify(mockedPlayer, times(1)).stop();
-		verify(mockedPlayer, times(1)).reset();
-		verify(mockedPlayer, times(1)).release();
-	}
+    @Test
+    public void testStartPlayerInitializedIsPlaying() {
+        testInitializeTestee();
+        assertTrue(isInitialized());
+        // reset player mock to remove initialized calls from
+        // testInitializeTestee.
+        Mockito.reset(mockedPlayer);
+        when(mockedPlayer.isPlaying()).thenReturn(true);
 
-	@Test
-	public void testGetDurationUninitialized() {
-		int expected = 0;
-		int actual = testee.getDuration();
-		assertEquals(expected, actual);
-	}
-	
-	@Test
-	public void testGetDurationInitialized() {
-		testInitializeTestee();
-		
-		int expected = 200;
-		when(mockedPlayer.getDuration()).thenReturn(expected);
-		int actual = testee.getDuration();
-		assertEquals(expected, actual);
-	}
+        testee.startPlayer();
+        // we have to wait a bit to let the started Thread finish
+        try {
+            Thread.sleep(100);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        // check, that init has not been called
+        verify(mockedPlayer, never()).setLooping(true);
 
-	private boolean isInitialized() {
-		try {
-			Field playerIsInitialized = testee.getClass().getDeclaredField(
-					"playerIsInitialized");
-			playerIsInitialized.setAccessible(true);
-			boolean result = playerIsInitialized.getBoolean(testee);
-			return result;
-		} 
-		catch (Exception e) {
-			fail(e.getMessage());
-		}
-		return false;
-	}
-	
-	private int getCurrentTime() {
-		try {
-			Field currentTime = testee.getClass().getDeclaredField(
-					"currentTime");
-			currentTime.setAccessible(true);
-			int result = currentTime.getInt(testee);
-			return result;
-		} 
-		catch (Exception e) {
-			fail(e.getMessage());
-		}
-		return Integer.MAX_VALUE;
-	}
-	
-	private void setCurrentTime(int time) {
-		try {
-			Field currentTime = testee.getClass().getDeclaredField(
-					"currentTime");
-			currentTime.setAccessible(true);
-			currentTime.setInt(testee, time);
-		} 
-		catch (Exception e) {
-			fail(e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testRunTimerRunnable_updateCurrentTime() {
-		int currentTimeBeforeCall = getCurrentTime();
-		int expectedTimeAfterCall = currentTimeBeforeCall - TimeConstants.SECOND;
-		String timeBeforeCall = TimeConstants.timeToString(currentTimeBeforeCall);
-		
-		Runnable r = testee.createTimerRunnable(mockedHandler);
-		r.run();
-		int currentTimeAfterCall = getCurrentTime();
-		String timeAfterCall = TimeConstants.timeToString(currentTimeAfterCall);
-		
-		verify(mockedHandler, times(1)).removeCallbacks(r);
-		
-		// check called updateTiem
-		verify(mockedGui, never()).updateTime(timeBeforeCall);
-		verify(mockedGui, times(1)).updateTime(timeAfterCall);
-		
-		assertEquals(expectedTimeAfterCall, currentTimeAfterCall);
-	}
-	
-	@Test
-	public void testRunTimerRunnable_currentTimeGreaterZero() {
-		testInitializeTestee();
-		setCurrentTime(2 * TimeConstants.SECOND);
-		Runnable r = testee.createTimerRunnable(mockedHandler);
-		r.run();		
-		verify(mockedHandler, times(1)).postDelayed(r, TimeConstants.SECOND);
-		verify(mockedGui, never()).updateProgress(0);
-		verify(mockedPlayer, never()).stop();
-	}
-	
-	@Test
-	public void testRunTimerRunnable_currentTimeEqualsZero() {
-		testInitializeTestee();
-		setCurrentTime(0);
-		Runnable r = testee.createTimerRunnable(mockedHandler);
-		r.run();		
-		verify(mockedHandler, never()).postDelayed(r, TimeConstants.SECOND);
-		
-		// check player stopped
-		verify(mockedGui, times(1)).updateProgress(0);
-		verify(mockedPlayer, times(1)).stop();
-	}
-	
-	@Test
-	public void testRunTimerRunnable_currentTimeLesserZero() {
-		testInitializeTestee();
-		setCurrentTime(-1);
-		Runnable r = testee.createTimerRunnable(mockedHandler);
-		r.run();		
-		verify(mockedHandler, never()).postDelayed(r, TimeConstants.SECOND);
-		
-		// check player stopped
-		verify(mockedGui, times(1)).updateProgress(0);
-		verify(mockedPlayer, times(1)).stop();
-	}
+        verify(mockedPlayer, never()).start();
+    }
+
+    @Test
+    public void testStopPlayerUninitialized() {
+        assertFalse(isInitialized());
+        testee.stopPlayer();
+
+        verify(mockedGui, never()).updateProgress(0);
+        verify(mockedPlayer, never()).stop();
+        verify(mockedPlayer, never()).reset();
+        verify(mockedPlayer, never()).release();
+    }
+
+    @Test
+    public void testStopPlayerInitialized() {
+        testInitializeTestee();
+        testee.stopPlayer();
+
+        verify(mockedGui, times(1)).updateProgress(0);
+        verify(mockedPlayer, times(1)).stop();
+        verify(mockedPlayer, times(1)).reset();
+        verify(mockedPlayer, times(1)).release();
+    }
+
+    @Test
+    public void testGetDurationUninitialized() {
+        int expected = 0;
+        int actual = testee.getDuration();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testGetDurationInitialized() {
+        testInitializeTestee();
+
+        int expected = 200;
+        when(mockedPlayer.getDuration()).thenReturn(expected);
+        int actual = testee.getDuration();
+        assertEquals(expected, actual);
+    }
+
+    private boolean isInitialized() {
+        try {
+            Field playerIsInitialized = testee.getClass().getDeclaredField("playerIsInitialized");
+            playerIsInitialized.setAccessible(true);
+            boolean result = playerIsInitialized.getBoolean(testee);
+            return result;
+        }
+        catch (Exception e) {
+            fail(e.getMessage());
+        }
+        return false;
+    }
+
+    private int getCurrentTime() {
+        try {
+            Field currentTime = testee.getClass().getDeclaredField("currentTime");
+            currentTime.setAccessible(true);
+            int result = currentTime.getInt(testee);
+            return result;
+        }
+        catch (Exception e) {
+            fail(e.getMessage());
+        }
+        return Integer.MAX_VALUE;
+    }
+
+    private void setCurrentTime(int time) {
+        try {
+            Field currentTime = testee.getClass().getDeclaredField("currentTime");
+            currentTime.setAccessible(true);
+            currentTime.setInt(testee, time);
+        }
+        catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void testRunTimerRunnable_updateCurrentTime() {
+        int currentTimeBeforeCall = getCurrentTime();
+        int expectedTimeAfterCall = currentTimeBeforeCall - TimeConstants.SECOND;
+        String timeBeforeCall = TimeConstants.timeToString(currentTimeBeforeCall);
+
+        Runnable r = testee.createTimerRunnable(mockedHandler);
+        r.run();
+        int currentTimeAfterCall = getCurrentTime();
+        String timeAfterCall = TimeConstants.timeToString(currentTimeAfterCall);
+
+        verify(mockedHandler, times(1)).removeCallbacks(r);
+
+        // check called updateTiem
+        verify(mockedGui, never()).updateTime(timeBeforeCall);
+        verify(mockedGui, times(1)).updateTime(timeAfterCall);
+
+        assertEquals(expectedTimeAfterCall, currentTimeAfterCall);
+    }
+
+    @Test
+    public void testRunTimerRunnable_currentTimeGreaterZero() {
+        testInitializeTestee();
+        setCurrentTime(2 * TimeConstants.SECOND);
+        Runnable r = testee.createTimerRunnable(mockedHandler);
+        r.run();
+        verify(mockedHandler, times(1)).postDelayed(r, TimeConstants.SECOND);
+        verify(mockedGui, never()).updateProgress(0);
+        verify(mockedPlayer, never()).stop();
+    }
+
+    @Test
+    public void testRunTimerRunnable_currentTimeEqualsZero() {
+        testInitializeTestee();
+        setCurrentTime(0);
+        Runnable r = testee.createTimerRunnable(mockedHandler);
+        r.run();
+        verify(mockedHandler, never()).postDelayed(r, TimeConstants.SECOND);
+
+        // check player stopped
+        verify(mockedGui, times(1)).updateProgress(0);
+        verify(mockedPlayer, times(1)).stop();
+    }
+
+    @Test
+    public void testRunTimerRunnable_currentTimeLesserZero() {
+        testInitializeTestee();
+        setCurrentTime(-1);
+        Runnable r = testee.createTimerRunnable(mockedHandler);
+        r.run();
+        verify(mockedHandler, never()).postDelayed(r, TimeConstants.SECOND);
+
+        // check player stopped
+        verify(mockedGui, times(1)).updateProgress(0);
+        verify(mockedPlayer, times(1)).stop();
+    }
 
 }

@@ -38,165 +38,163 @@ import com.google.inject.Injector;
  */
 public class TimedSleepPlayer implements ITimedSleepPlayer {
 
-	private int currentTime = TimeConstants.DEFAULT_TIME;
+    private int currentTime = TimeConstants.DEFAULT_TIME;
 
-	private final IOceanWavesGui gui;
-	
-	private final Injector injector;
+    private final IOceanWavesGui gui;
 
-	private MediaPlayer player;
+    private final Injector injector;
 
-	private boolean playerIsInitialized = false;
+    private MediaPlayer player;
 
-	private int sleepTime = TimeConstants.DEFAULT_TIME;
+    private boolean playerIsInitialized = false;
 
-	private Handler timerHandler;
+    private int sleepTime = TimeConstants.DEFAULT_TIME;
 
-	private Runnable timerRunnable;
+    private Handler timerHandler;
 
-	@Inject
-	public TimedSleepPlayer(final Injector injector) {
-		this.gui = injector.getInstance(IOceanWavesGui.class);
-		this.injector = injector;
+    private Runnable timerRunnable;
 
-		this.timerHandler = injector.getInstance(Handler.class);
-		this.timerRunnable = createTimerRunnable(timerHandler);
-	}
+    @Inject
+    public TimedSleepPlayer(final Injector injector) {
+        this.gui = injector.getInstance(IOceanWavesGui.class);
+        this.injector = injector;
 
-	protected Runnable createTimerRunnable(final Handler timerHandler) {
-		Runnable r = new Runnable() {
+        this.timerHandler = injector.getInstance(Handler.class);
+        this.timerRunnable = createTimerRunnable(timerHandler);
+    }
 
-			public void run() {
-				timerHandler.removeCallbacks(this);
-				currentTime -= TimeConstants.SECOND;
-				updateTime();
-				if (currentTime <= 0) {
-					stopPlayer();
-				} 
-				else {
-					timerHandler.postDelayed(this, TimeConstants.SECOND);
-				}
-			}
-		};
-		return r;
-	}
+    protected Runnable createTimerRunnable(final Handler timerHandler) {
+        Runnable r = new Runnable() {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.github.arnehaber.android.ITimedSleepPlayer#getSleepTime()
-	 */
-	public int getSleepTime() {
-		return sleepTime;
-	}
+            public void run() {
+                timerHandler.removeCallbacks(this);
+                currentTime -= TimeConstants.SECOND;
+                updateTime();
+                if (currentTime <= 0) {
+                    stopPlayer();
+                }
+                else {
+                    timerHandler.postDelayed(this, TimeConstants.SECOND);
+                }
+            }
+        };
+        return r;
+    }
 
-	/**
-	 * Initializes the used {@link MediaPlayer} with the audio file served from
-	 * the {@link IOceanWavesGui}.
-	 */
-	private void initializePlayer() {
-		AssetFileDescriptor audioFile = gui.getSelectedAudioFile();
-		player = injector.getInstance(MediaPlayer.class);
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.github.arnehaber.android.ITimedSleepPlayer#getSleepTime()
+     */
+    public int getSleepTime() {
+        return sleepTime;
+    }
 
-		try {
+    /**
+     * Initializes the used {@link MediaPlayer} with the audio file served from
+     * the {@link IOceanWavesGui}.
+     */
+    private void initializePlayer() {
+        AssetFileDescriptor audioFile = gui.getSelectedAudioFile();
+        player = injector.getInstance(MediaPlayer.class);
 
-			player.setDataSource(audioFile.getFileDescriptor(),
-					audioFile.getStartOffset(), audioFile.getLength());
-			audioFile.close();
-			player.prepare();
-			player.setLooping(true);
-			playerIsInitialized = true;
-		} 
-		catch (Exception e) {
-			Log.e(getClass().getName(), e.getMessage(), e);
-		}
-	}
+        try {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.github.arnehaber.android.ITimedSleepPlayer#pausePlayer()
-	 */
-	public void pausePlayer() {
-		if (playerIsInitialized) {
-			currentTime = sleepTime;
-			updateTime();
-			if (player.isPlaying()) {
-				timerHandler.removeCallbacks(timerRunnable);
-			}
-			player.pause();
-		}
-	}
+            player.setDataSource(audioFile.getFileDescriptor(), audioFile.getStartOffset(), audioFile.getLength());
+            audioFile.close();
+            player.prepare();
+            player.setLooping(true);
+            playerIsInitialized = true;
+        }
+        catch (Exception e) {
+            Log.e(getClass().getName(), e.getMessage(), e);
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.github.arnehaber.android.ITimedSleepPlayer#startPlayer()
-	 */
-	public void startPlayer() {
-		if (!playerIsInitialized) {
-			initializePlayer();
-		}
-		if (!player.isPlaying()) {
-			Thread t = new Thread(new Runnable() {
-				public void run() {
-					player.start();
-					timerHandler.postDelayed(timerRunnable,
-							TimeConstants.SECOND);
-				}
-			});
-			t.start();
-		}
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.github.arnehaber.android.ITimedSleepPlayer#pausePlayer()
+     */
+    public void pausePlayer() {
+        if (playerIsInitialized) {
+            currentTime = sleepTime;
+            updateTime();
+            if (player.isPlaying()) {
+                timerHandler.removeCallbacks(timerRunnable);
+            }
+            player.pause();
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.github.arnehaber.android.ITimedSleepPlayer#stopPlayer()
-	 */
-	public void stopPlayer() {
-		if (playerIsInitialized) {
-			pausePlayer();
-			gui.updateProgress(0);
-			playerIsInitialized = false;
-			player.stop();
-			player.reset();
-			player.release();			
-		}
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.github.arnehaber.android.ITimedSleepPlayer#startPlayer()
+     */
+    public void startPlayer() {
+        if (!playerIsInitialized) {
+            initializePlayer();
+        }
+        if (!player.isPlaying()) {
+            Thread t = new Thread(new Runnable() {
+                public void run() {
+                    player.start();
+                    timerHandler.postDelayed(timerRunnable, TimeConstants.SECOND);
+                }
+            });
+            t.start();
+        }
+    }
 
-	private void updateTime() {
-		String time = TimeConstants.timeToString(currentTime);
-		gui.updateTime(time);
-		if (playerIsInitialized && player.isPlaying()) {
-			int pos = player.getCurrentPosition();
-			gui.updateProgress(pos);
-		}
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.github.arnehaber.android.ITimedSleepPlayer#stopPlayer()
+     */
+    public void stopPlayer() {
+        if (playerIsInitialized) {
+            pausePlayer();
+            gui.updateProgress(0);
+            playerIsInitialized = false;
+            player.stop();
+            player.reset();
+            player.release();
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.github.arnehaber.android.ITimedSleepPlayer#getDuration()
-	 */
-	public int getDuration() {
-		if (playerIsInitialized) {
-			return player.getDuration();
-		} 
-		else {
-			return 0;
-		}
-	}
+    private void updateTime() {
+        String time = TimeConstants.timeToString(currentTime);
+        gui.updateTime(time);
+        if (playerIsInitialized && player.isPlaying()) {
+            int pos = player.getCurrentPosition();
+            gui.updateProgress(pos);
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.github.arnehaber.android.ITimedSleepPlayer#updateSleepTime(int)
-	 */
-	public void setSleepTime(int progress) {
-		currentTime = progress;
-		sleepTime = progress;
-		updateTime();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.github.arnehaber.android.ITimedSleepPlayer#getDuration()
+     */
+    public int getDuration() {
+        if (playerIsInitialized) {
+            return player.getDuration();
+        }
+        else {
+            return 0;
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.github.arnehaber.android.ITimedSleepPlayer#updateSleepTime(int)
+     */
+    public void setSleepTime(int progress) {
+        currentTime = progress;
+        sleepTime = progress;
+        updateTime();
+    }
 
 }

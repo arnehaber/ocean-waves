@@ -20,7 +20,6 @@ package com.github.arnehaber.android;
  * #L%
  */
 
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
@@ -91,7 +90,7 @@ public class OceanWavesMainActivityTest {
         playButton.performClick();
         verify(mockedPlayer, times(1)).startPlayer();
     }
-    
+
     @Test
     public void testPressStopButton() {
         replacePlayerWithMock();
@@ -99,7 +98,7 @@ public class OceanWavesMainActivityTest {
         stopButton.performClick();
         verify(mockedPlayer, times(1)).pausePlayer();
     }
-    
+
     @Test
     public void testAdjustSleepTime() {
         replacePlayerWithMock();
@@ -108,20 +107,20 @@ public class OceanWavesMainActivityTest {
         sleepTimeSetter.setProgress(progress);
         verify(mockedPlayer, times(1)).setSleepTime(progress);
     }
-    
+
     @Test
     public void testUpdateTime() {
         TextView timeTextView = (TextView) testee.findViewById(R.id.textTime);
-        
+
         String expected = "47:00";
         testee.updateTime(expected);
-        
+
         assertEquals(expected, timeTextView.getText());
     }
-    
+
     @Test
     public void testUpdateProgress() {
-        int[] testValues = {0, 1, 2, 100};
+        int[] testValues = { 0, 1, 2, 100 };
         ProgressBar progress = (ProgressBar) testee.findViewById(R.id.progressBar);
         progress.setMax(1000);
         for (int expected : testValues) {
@@ -130,36 +129,35 @@ public class OceanWavesMainActivityTest {
             assertEquals(expected, actual);
         }
     }
-    
+
     @Test
     public void testUpdateProgressRespectMax() {
-        
+
         ProgressBar progress = (ProgressBar) testee.findViewById(R.id.progressBar);
         int max = 1000;
-        
-        int expected = max; 
-        
+
+        int expected = max;
+
         progress.setMax(max);
         testee.updateProgress(1001);
         int actual = progress.getProgress();
         assertEquals(expected, actual);
-        
+
     }
-    
+
     @Test
     public void testGetSelectedAudioFile() {
         AssetFileDescriptor expected = testee.getResources().openRawResourceFd(R.raw.ocean_mp3);
         AssetFileDescriptor actual = testee.getSelectedAudioFile();
         assertEquals(expected, actual);
     }
-    
+
     @Test
     public void testProvider() {
         IOceanWavesGui expected = testee;
         IOceanWavesGui actual = testee.get();
         assertEquals(expected, actual);
     }
-    
 
     private void replacePlayerWithMock() {
         try {

@@ -24,50 +24,50 @@ package com.github.arnehaber.android.helper;
  * Helper class that provides time constants and helper methods.
  * 
  * @author Arne Haber
- *
+ * 
  */
 public class TimeConstants {
-	
-	/**
-	 * A second in ms.
-	 */
-	public static final int SECOND = 1000;
-	
-	/**
-	 * Default sleep time.
-	 */
-	public static final int DEFAULT_TIME = 45 * 60 * SECOND;
-	
-	/**
-	 * Max sleep time.
-	 */
-	public static final int MAX_SLEEP_TIME = 60 * 60 * SECOND;
 
+    /**
+     * A second in ms.
+     */
+    public static final int SECOND = 1000;
 
-	/**
-	 * Private constructor to prevent utility class instantiation.
-	 */
-	private TimeConstants() {
-		
-	}
-	
-	/**
-	 * Prints the given time in format mm:ss.
-	 * 
-	 * @param ms time to print in ms
-	 * @return the given time as a readable string.
-	 */
-	public static String timeToString(int ms) {
-		int minutes = (ms / TimeConstants.SECOND);
-		StringBuilder sb = new StringBuilder();
-		sb.append((minutes / 60));
-		sb.append(":");
-		int mod = minutes % 60;
-		if (mod < 10) {
-			sb.append("0");
-		}
-		sb.append(mod);
-		return sb.toString();
-	}
+    /**
+     * Default sleep time.
+     */
+    public static final int DEFAULT_TIME = 45 * 60 * SECOND;
+
+    /**
+     * Max sleep time.
+     */
+    public static final int MAX_SLEEP_TIME = 60 * 60 * SECOND;
+
+    /**
+     * Private constructor to prevent utility class instantiation.
+     */
+    private TimeConstants() {
+
+    }
+
+    /**
+     * Prints the given time in format mm:ss.
+     * 
+     * @param ms
+     *            time to print in ms
+     * @return the given time as a readable string.
+     */
+    public static String timeToString(int ms) {
+        int minutes = (ms / TimeConstants.SECOND);
+        StringBuilder sb = new StringBuilder();
+        sb.append((minutes / 60));
+        sb.append(":");
+        int mod = minutes % 60;
+        if (mod < 10) {
+            sb.append("0");
+        }
+        sb.append(mod);
+        return sb.toString();
+    }
 
 }
