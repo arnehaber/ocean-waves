@@ -20,7 +20,6 @@ package com.github.arnehaber.android;
  * #L%
  */
 
-
 import android.app.Activity;
 import android.content.res.AssetFileDescriptor;
 import android.os.Bundle;
@@ -46,137 +45,139 @@ import com.google.inject.Provider;
  */
 public class OceanWavesMainActivity extends Activity implements IOceanWavesGui, Provider<IOceanWavesGui> {
 
+    /**
+     * Displays the current sleep time.
+     */
+    private TextView timeTextView;
 
-	/**
-	 * Displays the current sleep time.
-	 */
-	private TextView timeTextView;
+    /**
+     * Displays the play back progress.
+     */
+    private ProgressBar progress;
 
-	/**
-	 * Displays the play back progress. 
-	 */
-	private ProgressBar progress;
+    /**
+     * Controlled sound player.
+     */
+    private ITimedSleepPlayer player;
 
-	/**
-	 * Controlled sound player.
-	 */
-	private ITimedSleepPlayer player;
+    /**
+     * Called when the activity is first created.
+     * 
+     * @param savedInstanceState
+     *            If the activity is being re-initialized after previously being
+     *            shut down then this Bundle contains the data it most recently
+     *            supplied in onSaveInstanceState(Bundle). <b>Note: Otherwise it
+     *            is null.</b>
+     */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-	/**
-	 * Called when the activity is first created.
-	 * 
-	 * @param savedInstanceState
-	 *            If the activity is being re-initialized after previously being
-	 *            shut down then this Bundle contains the data it most recently
-	 *            supplied in onSaveInstanceState(Bundle). <b>Note: Otherwise it
-	 *            is null.</b>
-	 */
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-		
-		// setup guice
-		Module mod = new OceanWavesModule(this);
-		Injector injector = Guice.createInjector(mod);
-		
-		// inject player
-		player = injector.getInstance(ITimedSleepPlayer.class);
+        // setup guice
+        Module mod = new OceanWavesModule(this);
+        Injector injector = Guice.createInjector(mod);
 
-		// setup sleep time progress bar
-		progress = (ProgressBar) findViewById(R.id.progressBar);
-		progress.setMax(player.getDuration());
+        // inject player
+        player = injector.getInstance(ITimedSleepPlayer.class);
 
-		// setup sleep time setter
-		SeekBar sleepTimeSetter = (SeekBar) findViewById(R.id.sleepTimeSetter);
-		sleepTimeSetter.setMax(TimeConstants.MAX_SLEEP_TIME);
-		sleepTimeSetter.setProgress(player.getSleepTime());
-		sleepTimeSetter
-				.setOnSeekBarChangeListener(createSleepTimeSetterListener());
+        // setup sleep time progress bar
+        progress = (ProgressBar) findViewById(R.id.progressBar);
+        progress.setMax(player.getDuration());
 
-		// setup sleep time display
-		timeTextView = (TextView) findViewById(R.id.textTime);
+        // setup sleep time setter
+        SeekBar sleepTimeSetter = (SeekBar) findViewById(R.id.sleepTimeSetter);
+        sleepTimeSetter.setMax(TimeConstants.MAX_SLEEP_TIME);
+        sleepTimeSetter.setProgress(player.getSleepTime());
+        sleepTimeSetter.setOnSeekBarChangeListener(createSleepTimeSetterListener());
 
-		// setup buttons
-		final Button playButton = (Button) findViewById(R.id.buttonPlay);
-		playButton.setOnClickListener(createPlayButtonListener());
-		final Button stopButton = (Button) findViewById(R.id.buttonStop);
-		stopButton.setOnClickListener(createStopButtonListener());
-	}
+        // setup sleep time display
+        timeTextView = (TextView) findViewById(R.id.textTime);
 
-	/**
-	 * 
-	 * @return a change listener that sets currentTime and sleepTime when
-	 *         progress is detected.
-	 */
-	private OnSeekBarChangeListener createSleepTimeSetterListener() {
-		OnSeekBarChangeListener result = new OnSeekBarChangeListener() {
-			public void onStopTrackingTouch(SeekBar seekBar) {
-			}
-			public void onStartTrackingTouch(SeekBar seekBar) {
-			}
-			public void onProgressChanged(SeekBar seekBar, int progress,
-					boolean fromUser) {
-				if (fromUser) {
-					player.setSleepTime(progress);
-				}
-			}
-		};
-		return result;
-	}
+        // setup buttons
+        final Button playButton = (Button) findViewById(R.id.buttonPlay);
+        playButton.setOnClickListener(createPlayButtonListener());
+        final Button stopButton = (Button) findViewById(R.id.buttonStop);
+        stopButton.setOnClickListener(createStopButtonListener());
+    }
 
+    /**
+     * 
+     * @return a change listener that sets currentTime and sleepTime when
+     *         progress is detected.
+     */
+    private OnSeekBarChangeListener createSleepTimeSetterListener() {
+        OnSeekBarChangeListener result = new OnSeekBarChangeListener() {
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
 
-	/**
-	 * 
-	 * @return stop button listener
-	 */
-	private OnClickListener createStopButtonListener() {
-		OnClickListener result = new OnClickListener() {
-			public void onClick(View v) {
-				player.pausePlayer();
-			}
-		};
-		return result;
-	}
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
 
-	/**
-	 * 
-	 * @return start button listener
-	 */
-	private OnClickListener createPlayButtonListener() {
-		OnClickListener result = new OnClickListener() {
-			public void onClick(View v) {
-				player.startPlayer();
-			}
-		};
-		return result;
-	}
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                player.setSleepTime(progress);
+            }
+        };
+        return result;
+    }
 
-	/* (non-Javadoc)
-	 * @see com.github.arnehaber.android.IOceanWavesGui#updateTime()
-	 */
-	public void updateTime(String time) {
-		timeTextView.setText(time);
-	}
+    /**
+     * 
+     * @return stop button listener
+     */
+    private OnClickListener createStopButtonListener() {
+        OnClickListener result = new OnClickListener() {
+            public void onClick(View v) {
+                player.pausePlayer();
+            }
+        };
+        return result;
+    }
 
-	/* (non-Javadoc)
-	 * @see com.github.arnehaber.android.IOceanWavesGui#updateProgress()
-	 */
-	public void updateProgress(int progress) {
-		this.progress.setProgress(progress);
-	}
+    /**
+     * 
+     * @return start button listener
+     */
+    private OnClickListener createPlayButtonListener() {
+        OnClickListener result = new OnClickListener() {
+            public void onClick(View v) {
+                player.startPlayer();
+            }
+        };
+        return result;
+    }
 
-	/* (non-Javadoc)
-	 * @see com.github.arnehaber.android.IOceanWavesGui#getSelectedAudioFile()
-	 */
-	public AssetFileDescriptor getSelectedAudioFile() {
-		return getResources().openRawResourceFd(R.raw.ocean_mp3);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.github.arnehaber.android.IOceanWavesGui#updateTime()
+     */
+    public void updateTime(String time) {
+        timeTextView.setText(time);
+    }
 
-	/**
-	 * @return the provided {@link IOceanWavesGui}.
-	 */
-	public IOceanWavesGui get() {
-		return this;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.github.arnehaber.android.IOceanWavesGui#updateProgress()
+     */
+    public void updateProgress(int progress) {
+        this.progress.setProgress(progress);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.github.arnehaber.android.IOceanWavesGui#getSelectedAudioFile()
+     */
+    public AssetFileDescriptor getSelectedAudioFile() {
+        return getResources().openRawResourceFd(R.raw.ocean_mp3);
+    }
+
+    /**
+     * @return the provided {@link IOceanWavesGui}.
+     */
+    public IOceanWavesGui get() {
+        return this;
+    }
 }

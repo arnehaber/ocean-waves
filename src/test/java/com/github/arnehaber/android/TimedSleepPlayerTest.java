@@ -62,7 +62,7 @@ public class TimedSleepPlayerTest {
 	private MediaPlayer mockedPlayer = Mockito.mock(MediaPlayer.class);
 	private Handler mockedHandler = Mockito.mock(Handler.class);
 
-	private ITimedSleepPlayer testee;
+	private TimedSleepPlayer testee;
 
 	@Before
 	public void setUp() {
@@ -317,6 +317,89 @@ public class TimedSleepPlayerTest {
 			fail(e.getMessage());
 		}
 		return false;
+	}
+	
+	private int getCurrentTime() {
+		try {
+			Field currentTime = testee.getClass().getDeclaredField(
+					"currentTime");
+			currentTime.setAccessible(true);
+			int result = currentTime.getInt(testee);
+			return result;
+		} 
+		catch (Exception e) {
+			fail(e.getMessage());
+		}
+		return Integer.MAX_VALUE;
+	}
+	
+	private void setCurrentTime(int time) {
+		try {
+			Field currentTime = testee.getClass().getDeclaredField(
+					"currentTime");
+			currentTime.setAccessible(true);
+			currentTime.setInt(testee, time);
+		} 
+		catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testRunTimerRunnable_updateCurrentTime() {
+		int currentTimeBeforeCall = getCurrentTime();
+		int expectedTimeAfterCall = currentTimeBeforeCall - TimeConstants.SECOND;
+		String timeBeforeCall = TimeConstants.timeToString(currentTimeBeforeCall);
+		
+		Runnable r = testee.createTimerRunnable(mockedHandler);
+		r.run();
+		int currentTimeAfterCall = getCurrentTime();
+		String timeAfterCall = TimeConstants.timeToString(currentTimeAfterCall);
+		
+		verify(mockedHandler, times(1)).removeCallbacks(r);
+		
+		// check called updateTiem
+		verify(mockedGui, never()).updateTime(timeBeforeCall);
+		verify(mockedGui, times(1)).updateTime(timeAfterCall);
+		
+		assertEquals(expectedTimeAfterCall, currentTimeAfterCall);
+	}
+	
+	@Test
+	public void testRunTimerRunnable_currentTimeGreaterZero() {
+		testInitializeTestee();
+		setCurrentTime(2 * TimeConstants.SECOND);
+		Runnable r = testee.createTimerRunnable(mockedHandler);
+		r.run();		
+		verify(mockedHandler, times(1)).postDelayed(r, TimeConstants.SECOND);
+		verify(mockedGui, never()).updateProgress(0);
+		verify(mockedPlayer, never()).stop();
+	}
+	
+	@Test
+	public void testRunTimerRunnable_currentTimeEqualsZero() {
+		testInitializeTestee();
+		setCurrentTime(0);
+		Runnable r = testee.createTimerRunnable(mockedHandler);
+		r.run();		
+		verify(mockedHandler, never()).postDelayed(r, TimeConstants.SECOND);
+		
+		// check player stopped
+		verify(mockedGui, times(1)).updateProgress(0);
+		verify(mockedPlayer, times(1)).stop();
+	}
+	
+	@Test
+	public void testRunTimerRunnable_currentTimeLesserZero() {
+		testInitializeTestee();
+		setCurrentTime(-1);
+		Runnable r = testee.createTimerRunnable(mockedHandler);
+		r.run();		
+		verify(mockedHandler, never()).postDelayed(r, TimeConstants.SECOND);
+		
+		// check player stopped
+		verify(mockedGui, times(1)).updateProgress(0);
+		verify(mockedPlayer, times(1)).stop();
 	}
 
 }

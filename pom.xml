@@ -15,7 +15,7 @@
       <distribution>manual</distribution>
     </license>
   </licenses>
-  
+
   <issueManagement>
     <system>GitHub</system>
     <url>https://github.com/arnehaber/ocean-waves/issues</url>
@@ -31,7 +31,7 @@
     <developerConnection>scm:git:git://github.com/arnehaber/ocean-waves.git</developerConnection>
     <connection>scm:git:git://github.com/arnehaber/ocean-waves.git</connection>
     <tag>master</tag>
-  </scm>  
+  </scm>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -142,6 +142,21 @@
                     <ignore></ignore>
                   </action>
                 </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>
+                      com.jayway.maven.plugins.android.generation2
+                    </groupId>
+                    <artifactId>android-maven-plugin</artifactId>
+                    <versionRange>[3.8.2,)</versionRange>
+                    <goals>
+                      <goal>consume-aar</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
               </pluginExecutions>
             </lifecycleMappingMetadata>
           </configuration>
@@ -169,6 +184,8 @@
                 <exclude>com/github/arnehaber/android/BuildConfig.class</exclude>
                 <exclude>com/github/arnehaber/android/R.class</exclude>
                 <exclude>com/github/arnehaber/android/R$*.class</exclude>
+                <exclude>com/github/arnehaber/android/IOceanWavesGui.class</exclude>
+                <exclude>com/github/arnehaber/android/ITimedSleepPlayer.class</exclude>
               </excludes>
             </instrumentation>
           </configuration>

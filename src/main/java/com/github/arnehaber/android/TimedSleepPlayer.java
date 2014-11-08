@@ -71,7 +71,6 @@ public class TimedSleepPlayer implements ITimedSleepPlayer {
 				currentTime -= TimeConstants.SECOND;
 				updateTime();
 				if (currentTime <= 0) {
-					timerRunnable = this;
 					stopPlayer();
 				} 
 				else {
